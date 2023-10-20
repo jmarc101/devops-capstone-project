@@ -184,4 +184,18 @@ class TestAccountService(TestCase):
 
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    def test_get_account_list(self):
+        """It should return list of accounts"""
+        accounts = self._create_accounts(3)
+
+        resp = self.client.get(
+            f"{BASE_URL}"
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEquals(resp.get_json()[0]["name"], accounts[0].name)
+        self.assertEquals(resp.get_json()[1]["name"], accounts[1].name)
+        self.assertEquals(resp.get_json()[2]["name"], accounts[2].name)
+
+
 
