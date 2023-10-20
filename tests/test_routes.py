@@ -141,3 +141,47 @@ class TestAccountService(TestCase):
             f"{BASE_URL}/1000", content_type="application/json"
         )
         self.assertEquals(resp.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_update_an_account(self):
+        """It should Update an existing Account"""
+        account = self._create_accounts(1)[0]
+        new_account = AccountFactory()
+
+        account.name = new_account.name
+        account.email = new_account.email
+        account.phone_number = new_account.phone_number
+        account.address = new_account.address
+        account.date_joined = new_account.date_joined
+
+        account_json = account.serialize()
+
+        resp = self.client.put(
+            f"{BASE_URL}/{account.id}", json=account_json
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_account = resp.get_json()
+        self.assertEqual(updated_account["name"], new_account.name)
+        self.assertEqual(updated_account["email"], new_account.email)
+        self.assertEqual(updated_account["phone_number"], new_account.phone_number)
+        self.assertEqual(updated_account["address"], new_account.address)
+        
+    def test_cant_update_account_that_does_not_exist(self):
+        """should fail if trying to update an account that doesn't exist"""
+        account = AccountFactory()
+        account_json = account.serialize()
+
+        resp = self.client.put(
+            f"{BASE_URL}/{account.id}", json=account_json
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_can_not_post_on_route_with_id(self):
+        account = self._create_accounts(1)[0]
+        account_json = account.serialize()
+        resp = self.client.post(
+            f"{BASE_URL}/{account.id}", json=account_json
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
