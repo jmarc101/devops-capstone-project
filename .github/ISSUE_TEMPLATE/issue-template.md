@@ -3,7 +3,7 @@ name: Issue Template
 about: adding issue to repo
 title: ''
 labels: ''
-assignees: ''
+assignees: jmarc101
 
 ---
 
