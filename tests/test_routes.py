@@ -38,7 +38,6 @@ class TestAccountService(TestCase):
         init_db(app)
         talisman.force_https = False
 
-
     @classmethod
     def tearDownClass(cls):
         """Runs once before test suite"""
@@ -97,7 +96,8 @@ class TestAccountService(TestCase):
         headers = {
             'X-Frame-Options': 'SAMEORIGIN',
             'X-Content-Type-Options': 'nosniff',
-            'Content-Security-Policy': 'default-src \'self\'; object-src \'none\'',
+            'Content-Security-Policy': 'default-src \'self\';' +
+            ' object-src \'none\'',
             'Referrer-Policy': 'strict-origin-when-cross-origin'
         }
         print(response.headers)
@@ -109,7 +109,9 @@ class TestAccountService(TestCase):
         """It should return a CORS header"""
         response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
+        self.assertEqual(
+            response.headers.get('Access-Control-Allow-Origin'), '*'
+            )
 
     def test_create_account(self):
         """It should Create a new Account"""
@@ -146,7 +148,9 @@ class TestAccountService(TestCase):
             json=account.serialize(),
             content_type="test/html"
         )
-        self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        self.assertEqual(
+            response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+            )
 
     # ADD YOUR TEST CASES HERE ...
 
@@ -166,7 +170,7 @@ class TestAccountService(TestCase):
             f"{BASE_URL}/1000", content_type="application/json"
         )
         self.assertEquals(resp.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_update_an_account(self):
         """It should Update an existing Account"""
         account = self._create_accounts(1)[0]
@@ -187,9 +191,11 @@ class TestAccountService(TestCase):
         updated_account = resp.get_json()
         self.assertEqual(updated_account["name"], new_account.name)
         self.assertEqual(updated_account["email"], new_account.email)
-        self.assertEqual(updated_account["phone_number"], new_account.phone_number)
+        self.assertEqual(
+            updated_account["phone_number"], new_account.phone_number
+            )
         self.assertEqual(updated_account["address"], new_account.address)
-        
+
     def test_cant_update_account_that_does_not_exist(self):
         """should fail if trying to update an account that doesn't exist"""
         account = AccountFactory()
@@ -199,7 +205,7 @@ class TestAccountService(TestCase):
             f"{BASE_URL}/{account.id}", json=account_json
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_can_not_post_on_route_with_id(self):
         account = self._create_accounts(1)[0]
         account_json = account.serialize()
@@ -239,6 +245,3 @@ class TestAccountService(TestCase):
         )
 
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
-
-
